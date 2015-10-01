@@ -77,17 +77,17 @@ module Data.ConfigFile
 
      -- * Reading
      -- $reading
-     readfile, readhandle, readstring,
+     readFromFile, readFromHandle, readFromString,
 
      -- * Accessing Data
      Get_C(..),
-     sections, has_section,
-     options, has_option,
+     sections, hasSection,
+     options, hasOption,
      items,
 
      -- * Modifying Data
-     set, setshow, remove_option,
-     add_section, remove_section,
+     set, setShow, removeOption,
+     addSection, removeSection,
      merge,
 
      -- * Output Data
@@ -194,7 +194,7 @@ interpolatingAccess maxdepth cp s o =
     if maxdepth < 1
        then interError "maximum interpolation depth exceeded"
        else do x <- simpleAccess cp s o
-               case parse (interpmain $ lookupfunc) (s ++ "/" ++ o) x of
+               case parse (interpMain $ lookupfunc) (s ++ "/" ++ o) x of
                  Left y -> case head (errorMessages y) of
                                 Message z -> interError z
                                 _ -> interError (show y)
@@ -256,37 +256,37 @@ does not convey those options.
 
 May return an error if there is a syntax error.  May raise an exception if the file could not be accessed.
 -}
---readfile :: ConfigParser -> FilePath ->IO (CPResult ConfigParser)
-readfile :: MonadError CPError m => ConfigParser -> FilePath -> IO (m ConfigParser)
+--readFromFile :: ConfigParser -> FilePath ->IO (CPResult ConfigParser)
+readFromFile :: MonadError CPError m => ConfigParser -> FilePath -> IO (m ConfigParser)
 {-
-readfile cp fp = do n <- parse_file fp
+readFromFile cp fp = do n <- parseFile fp
                     return $ do y <- n
                                 return $ readutil cp y
 -}
-readfile cp fp = do n <- parse_file fp
-                    return $ n >>= (return . readutil cp)
+readFromFile cp fp = do n <- parseFile fp
+                        return $ n >>= (return . readutil cp)
 
-{- | Like 'readfile', but uses an already-open handle.  You should
-use 'readfile' instead of this if possible, since it will be able to
+{- | Like 'readFromFile', but uses an already-open handle.  You should
+use 'readFromFile' instead of this if possible, since it will be able to
 generate better error messages.
 
 Errors would be returned on a syntax error.
 -}
---readhandle :: ConfigParser -> Handle -> IO (CPResult ConfigParser)
-readhandle :: MonadError CPError m => ConfigParser -> Handle -> IO (m ConfigParser)
-readhandle cp h = do n <- parse_handle h
-                     return $ n >>= (return . (readutil cp))
+--readFromHandle :: ConfigParser -> Handle -> IO (CPResult ConfigParser)
+readFromHandle :: MonadError CPError m => ConfigParser -> Handle -> IO (m ConfigParser)
+readFromHandle cp h = do n <- parseHandle h
+                         return $ n >>= (return . (readutil cp))
 
-{- | Like 'readfile', but uses a string.  You should use 'readfile'
+{- | Like 'readFromFile', but uses a string.  You should use 'readFromFile'
 instead of this if you are processing a file, since it can generate
 better error messages.
 
 Errors would be returned on a syntax error.
 -}
-readstring ::  MonadError CPError m =>
+readFromString ::  MonadError CPError m =>
                ConfigParser -> String -> m ConfigParser
-readstring cp s = do
-                  n <- parse_string s
+readFromString cp s = do
+                  n <- parseString s
                   return $ readutil cp n
 
 {- | Returns a list of sections in your configuration file.  Never includes
@@ -297,18 +297,18 @@ sections = filter (/= "DEFAULT") . Map.keys . content
 {- | Indicates whether the given section exists.
 
 No special @DEFAULT@ processing is done. -}
-has_section :: ConfigParser -> SectionSpec -> Bool
-has_section cp x = Map.member x (content cp)
+hasSection :: ConfigParser -> SectionSpec -> Bool
+hasSection cp x = Map.member x (content cp)
 
 {- | Adds the specified section name.  Returns a
 'SectionAlreadyExists' error if the
 section was already present.  Otherwise, returns the new
 'ConfigParser' object.-}
-add_section ::  MonadError CPError m =>
+addSection ::  MonadError CPError m =>
                 ConfigParser -> SectionSpec -> m ConfigParser
-add_section cp s =
-    if has_section cp s
-       then throwError $ (SectionAlreadyExists s, "add_section")
+addSection cp s =
+    if hasSection cp s
+       then throwError $ (SectionAlreadyExists s, "addSection")
        else return $ cp {content = Map.insert s Map.empty (content cp)}
 
 {- | Removes the specified section.  Returns a 'NoSection' error if
@@ -318,23 +318,23 @@ object.
 This call may not be used to remove the @DEFAULT@ section.  Attempting to do
 so will always cause a 'NoSection' error.
  -}
-remove_section ::  MonadError CPError m =>
+removeSection ::  MonadError CPError m =>
                    ConfigParser -> SectionSpec -> m ConfigParser
-remove_section _ "DEFAULT" = throwError $ (NoSection "DEFAULT", "remove_section")
-remove_section cp s =
-    if has_section cp s
+removeSection _ "DEFAULT" = throwError $ (NoSection "DEFAULT", "removeSection")
+removeSection cp s =
+    if hasSection cp s
        then return $ cp {content = Map.delete s (content cp)}
-       else throwError $ (NoSection s, "remove_section")
+       else throwError $ (NoSection s, "removeSection")
 
 {- | Removes the specified option.  Returns a 'NoSection' error if the
 section does not exist and a 'NoOption' error if the option does not
 exist.  Otherwise, returns the new 'ConfigParser' object.
 -}
-remove_option ::  MonadError CPError m =>
+removeOption ::  MonadError CPError m =>
                   ConfigParser -> SectionSpec -> OptionSpec -> m ConfigParser
-remove_option cp s passedo =
+removeOption cp s passedo =
     do sectmap <- maybeToEither (NoSection s,
-                                 "remove_option " ++ formatSO s passedo) $
+                                 "removeOption " ++ formatSO s passedo) $
                   Map.lookup s (content cp)
        let o = (optionxform cp) passedo
        let newsect = Map.delete o sectmap
@@ -342,7 +342,7 @@ remove_option cp s passedo =
        if Map.member o sectmap
           then return $ cp {content = newmap}
           else throwError $ (NoOption o,
-                             "remove_option " ++ formatSO s passedo)
+                             "removeOption " ++ formatSO s passedo)
 
 {- | Returns a list of the names of all the options present in the
 given section.
@@ -361,8 +361,8 @@ only if the given section is present AND the given option is present
 in that section.  No special @DEFAULT@ processing is done.  No
 exception could be raised or error returned.
 -}
-has_option :: ConfigParser -> SectionSpec -> OptionSpec -> Bool
-has_option cp s o =
+hasOption :: ConfigParser -> SectionSpec -> OptionSpec -> Bool
+hasOption cp s o =
     let c = content cp
         v = do secthash <- Map.lookup s c
                return $ Map.member (optionxform cp $ o) secthash
@@ -483,9 +483,9 @@ It requires only a showable value as its parameter.
 This can be used with bool values, as well as numeric ones.
 
 Returns an error if the section does not exist. -}
-setshow :: (Show a, MonadError CPError m) =>
+setShow :: (Show a, MonadError CPError m) =>
            ConfigParser -> SectionSpec -> OptionSpec -> a -> m ConfigParser
-setshow cp s o val = set cp s o (show val)
+setShow cp s o val = set cp s o (show val)
 
 {- | Converts the 'ConfigParser' to a string representation that could be
 later re-parsed by this module or modified by a human.
@@ -517,13 +517,13 @@ to_string cp =
 {- $introduction
 
 Many programs need configuration files. These configuration files are
-typically used to configure certain runtime behaviors that need to be
+typically used to configure certain runtime behaviours that need to be
 saved across sessions. Various different configuration file formats
 exist.
 
 The ConfigParser module attempts to define a standard format that is
 easy for the user to edit, easy for the programmer to work with, yet
-remains powerful and flexible.
+powerful and flexible.
 -}
 
 {- $features
@@ -545,7 +545,7 @@ For the programmer, this module provides:
    and anything else Haskell's read can deal with
 
  * It is possible to make a configuration file parsable by this
-   module, the Unix shell, and\/or Unix make, though some feautres are,
+   module, the Unix shell, and\/or Unix make, though some features are,
    of course, not compatible with these other tools.
 
  * Syntax checking with error reporting including line numbers
@@ -558,9 +558,6 @@ For the programmer, this module provides:
  * Comprehensive documentation
 
  * Extensible API
-
- * Complete compatibility with Python's ConfigParser module, or my
-   ConfigParser module for OCaml, part of my MissingLib package.
 
 For the user, this module provides:
 
@@ -585,6 +582,8 @@ useful features of the original Python module, there are some differences
 in the implementation details.  This module is a complete, clean re-implementation
 in Haskell, not a Haskell translation of a Python program.  As such, the feature
 set is slightly different.
+
+/\-John Goerzen/
 -}
 
 {- $format
@@ -724,7 +723,7 @@ You can transform errors into exceptions in your code by using
 
 > import Data.Either.Utils
 > do
->    val <- readfile emptyCP "/etc/foo.cfg"
+>    val <- readFromFile emptyCP "/etc/foo.cfg"
 >    let cp = forceEither val
 >    putStrLn "Your setting is:"
 >    putStrLn $ forceEither $ get cp "sect1" "opt1"
@@ -747,7 +746,7 @@ Here's a neat example of chaining together calls to build up a 'ConfigParser'
 object:
 
 >do let cp = emptyCP
->   cp <- add_section cp "sect1"
+>   cp <- addSection cp "sect1"
 >   cp <- set cp "sect1" "opt1" "foo"
 >   cp <- set cp "sect1" "opt2" "bar"
 >   options cp "sect1"
@@ -762,7 +761,7 @@ stopped immediately and a @Left@ value would have been returned.  Consider
 this example:
 
 >do let cp = emptyCP
->   cp <- add_section cp "sect1"
+>   cp <- addSection cp "sect1"
 >   cp <- set cp "sect1" "opt1" "foo"
 >   cp <- set cp "sect2" "opt2" "bar"
 >   options cp "sect1"
@@ -775,7 +774,7 @@ You can combine this with the non-monadic style to get a final, pure value
 out of it:
 
 >forceEither $ do let cp = emptyCP
->                 cp <- add_section cp "sect1"
+>                 cp <- addSection cp "sect1"
 >                 cp <- set cp "sect1" "opt1" "foo"
 >                 cp <- set cp "sect1" "opt2" "bar"
 >                 options cp "sect1"
@@ -798,7 +797,7 @@ standalone example of doing that:
 >main = do
 >          rv <- runErrorT $
 >              do
->              cp <- join $ liftIO $ readfile emptyCP "/etc/passwd"
+>              cp <- join $ liftIO $ readFromFile emptyCP "/etc/passwd"
 >              let x = cp
 >              liftIO $ putStrLn "In the test"
 >              nb <- get x "DEFAULT" "nobody"
@@ -822,8 +821,8 @@ First, @main@ always runs in the IO monad only, so we take the result from
 the later calls and put it in @rv@.  Note that the combined block
 is started with @runErrorT $ do@ instead of just @do@.
 
-To get something out of the call to 'readfile', we use
-@join $ liftIO $ readfile@.  This will bring the result out of the IO monad
+To get something out of the call to 'readFromFile', we use
+@join $ liftIO $ readFromFile@.  This will bring the result out of the IO monad
 into the combined monad and process it like usual.  From here on,
 everything looks normal, except for IO calls.  They are all executed under
 @liftIO@ so that the result value is properly brought into the combined
@@ -858,7 +857,7 @@ You can use these functions to read data from a file.
 
 A common idiom for loading a new object from stratch is:
 
-@cp <- 'readfile' 'emptyCP' \"\/etc\/foo.cfg\"@
+@cp <- 'readFromFile' 'emptyCP' \"\/etc\/foo.cfg\"@
 
 Note the use of 'emptyCP'; this will essentially cause the file's data
 to be merged with the empty 'ConfigParser'.

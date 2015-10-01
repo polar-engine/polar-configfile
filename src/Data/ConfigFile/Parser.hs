@@ -22,7 +22,7 @@ Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farr
 
 module Data.ConfigFile.Parser
 (
- parse_string, parse_file, parse_handle, interpmain, ParseOutput
+ parseString, parseFile, parseHandle, interpMain, ParseOutput
        --satisfyG,
        --main
 ) where
@@ -38,20 +38,20 @@ import Data.ConfigFile.Types
 -- Exported funcs
 ----------------------------------------------------------------------
 
-parse_string :: MonadError CPError m =>
+parseString :: MonadError CPError m =>
                 String -> m ParseOutput
-parse_string s =
+parseString s =
     detokenize "(string)" $ parse loken "(string)" s
 
---parse_file :: FilePath -> IO (CPResult ParseOutput)
-parse_file :: MonadError CPError m => FilePath -> IO (m ParseOutput)
-parse_file f =
+--parseFile :: FilePath -> IO (CPResult ParseOutput)
+parseFile :: MonadError CPError m => FilePath -> IO (m ParseOutput)
+parseFile f =
     do o <- parseFromFile loken f
        return $ detokenize f o
 
---parse_handle :: Handle -> IO (CPResult ParseOutput)
-parse_handle :: MonadError CPError m => Handle -> IO (m ParseOutput)
-parse_handle h =
+--parseHandle :: Handle -> IO (CPResult ParseOutput)
+parseHandle :: MonadError CPError m => Handle -> IO (m ParseOutput)
+parseHandle h =
     do s <- hGetContents h
        let o = parse loken (show h) s
        return $ detokenize (show h) o
@@ -151,7 +151,7 @@ interptok lookupfunc = (try percentval)
                                  Right x -> return x
 
 
-interpmain :: (String -> Either CPError String) -> Parser String
-interpmain lookupfunc =
+interpMain :: (String -> Either CPError String) -> Parser String
+interpMain lookupfunc =
     do r <- manyTill (interptok lookupfunc) eof
        return $ concat r
