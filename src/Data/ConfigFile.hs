@@ -18,8 +18,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 
 Configuration file parsing, generation, and manipulation
 
-Copyright (C) 2004-2008 John Goerzen, jgoerzen\@complete.org
-Copyright (C) 2015 David Farrell, shokku.ra\@gmail.com
+Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
 
 This module contains extensive documentation.  Please scroll down to the Introduction section to continue reading.
 -}

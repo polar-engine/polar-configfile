@@ -17,8 +17,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 Parser support for "Data.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
-Copyright (C) 2004-2008 John Goerzen, jgoerzen\@complete.org
-Copyright (C) 2015 David Farrell, shokku.ra\@gmail.com
+Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
 module Data.ConfigFile.Parser
