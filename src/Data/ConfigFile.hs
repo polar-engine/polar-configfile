@@ -1,31 +1,29 @@
-{-# LANGUAGE UndecidableInstances, OverlappingInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 {-
 Copyright (C) 2004-2008 John Goerzen <jgoerzen@complete.org>
-
-This program is free software; you can redistribute it and/or modify it, as
-specified in the COPYRIGHT file, under the terms of either version 2.1 of
-the LGPL (or, at your option, any later version) or the 3-clause BSD license.
+Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
-{- |
-   Module     : Data.ConfigFile
-   Copyright  : Copyright (C) 2004-2008 John Goerzen
-   License    : Either LGPL or BSD3, as specified in the COPYRIGHT file.
+{-|
+   Module      : Data.ConfigFile
+   Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
+   License     : BSD3
 
-   Maintainer : John Goerzen <jgoerzen@complete.org>
-   Stability  : provisional
-   Portability: portable
+   Maintainer  : David Farrell <shokku.ra@gmail.com>
+   Stability   : unstable
+   Portability : non-portable (GHC extensions)
 
 Configuration file parsing, generation, and manipulation
 
-Copyright (c) 2004-2008 John Goerzen, jgoerzen\@complete.org
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Copyright (C) 2004-2008 John Goerzen, jgoerzen\@complete.org
+Copyright (C) 2015 David Farrell, shokku.ra\@gmail.com
 
 This module contains extensive documentation.  Please scroll down to the Introduction section to continue reading.
 -}
+
 module Data.ConfigFile
     (
      -- * Introduction
@@ -103,8 +101,7 @@ import Data.ConfigFile.Parser
 import Data.Either.Utils
 import Data.String.Utils
 import qualified Data.Map as Map
-import Data.List
-import System.IO(Handle)
+import System.IO (Handle)
 import Data.Char
 import Control.Monad.Error
 
@@ -415,14 +412,14 @@ The following will produce a False value:
  * false -}
     get :: MonadError CPError m => ConfigParser -> SectionSpec -> OptionSpec -> m a
 
+instance {-# OVERLAPPABLE #-} Read t => Get_C t where
+    get = genericget
+
 instance Get_C String where
     get cp s o = eitherToMonadError $ (accessfunc cp) cp s o
 
 instance Get_C Bool where
     get = getbool
-
-instance Read t => Get_C t where
-    get = genericget
 
 -- Based on code from Neil Mitchell's safe-0.3.3 package.
 readMaybe :: Read a => String -> Maybe a

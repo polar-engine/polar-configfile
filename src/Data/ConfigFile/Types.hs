@@ -1,29 +1,25 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+
 {-
 Copyright (C) 2004-2008 John Goerzen <jgoerzen@complete.org>
-
-This program is free software; you can redistribute it and/or modify it, as
-specified in the COPYRIGHT file, under the terms of either version 2.1 of
-the LGPL (or, at your option, any later version) or the 3-clause BSD license.
+Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
-{- |
-   Module     : Data.ConfigFile.Types
-   Copyright  : Copyright (C) 2004-2008 John Goerzen
-   License    : Either LGPL or BSD3, as specified in the COPYRIGHT file.
+{-|
+   Module      : Data.ConfigFile.Types
+   Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
+   License     : BSD3
 
-   Maintainer : John Goerzen <jgoerzen@complete.org>
-   Stability  : provisional
-   Portability: portable
+   Maintainer  : David Farrell <shokku.ra@gmail.com>
+   Stability   : unstable
+   Portability : non-portable (GHC extensions)
 
 Internal types for "Data.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
-Copyright (c) 2004-2008 John Goerzen, jgoerzen\@complete.org
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
+Copyright (C) 2004-2008 John Goerzen, jgoerzen\@complete.org
+Copyright (C) 2015 David Farrell, shokku.ra\@gmail.com
 -}
 
 module Data.ConfigFile.Types (

@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Data.ConfigFile.Monadic (
   -- * Overview
   -- $overview
