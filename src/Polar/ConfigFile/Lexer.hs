@@ -1,3 +1,5 @@
+{-# LANGUAGE Trustworthy #-}
+
 {- arch-tag: ConfigParser lexer support
 Copyright (C) 2004, 2008 John Goerzen <jgoerzen@complete.org>
 Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
