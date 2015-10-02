@@ -56,7 +56,7 @@ type ConfigSections = Map.Map SectionName ConfigOptions
 
 {- | Possible ConfigParser errors. -}
 data ConfigErrorType = ParseError String        -- ^ Parse error
-                     | SectionAlreadyExists SectionName -- ^ Attempt to create an already-existing ection
+                     | SectionAlreadyExists SectionName -- ^ Attempt to create an already-existing section
                      | NoSection SectionName    -- ^ The section does not exist
                      | NoOption OptionName      -- ^ The option does not exist
                      | OtherProblem String      -- ^ Miscellaneous error
