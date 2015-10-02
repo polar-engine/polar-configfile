@@ -8,7 +8,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
 {-|
-   Module      : Data.ConfigFile
+   Module      : Polar.ConfigFile
    Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
    License     : BSD3
 
@@ -23,7 +23,7 @@ Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farr
 This module contains extensive documentation.  Please scroll down to the Introduction section to continue reading.
 -}
 
-module Data.ConfigFile
+module Polar.ConfigFile
     (
      -- * Introduction
      -- $introduction
@@ -95,8 +95,8 @@ module Data.ConfigFile
 
     ) where
 
-import Data.ConfigFile.Types
-import Data.ConfigFile.Parser
+import Polar.ConfigFile.Types
+import Polar.ConfigFile.Parser
 import Data.Either.Utils
 import Data.String.Utils
 import qualified Data.Map as Map
@@ -112,7 +112,7 @@ import Text.ParserCombinators.Parsec (parse)
 -- Basic types / default values
 ----------------------------------------------------------------------
 
-{- | The default empty 'Data.ConfigFile' object.
+{- | The default empty 'Polar.ConfigFile' object.
 
 The content contains only an empty mandatory @DEFAULT@ section.
 
@@ -791,7 +791,7 @@ Using Haskell's monad transformers, you can run it in the combined
 Error\/IO monad.  That is, you will get an IO result back.  Here is a full
 standalone example of doing that:
 
->import Data.ConfigFile
+>import Polar.ConfigFile
 >import Control.Monad.Error
 >
 >main = do

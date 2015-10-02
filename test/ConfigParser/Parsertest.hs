@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module ConfigParser.Parsertest(tests) where
 import Test.HUnit
-import Data.ConfigFile.Parser
-import Data.ConfigFile.Types
+import Polar.ConfigFile.Parser
+import Polar.ConfigFile.Types
 import Control.Exception
 
 test_basic =

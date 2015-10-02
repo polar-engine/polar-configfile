@@ -4,7 +4,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
 {- |
-   Module      : Data.ConfigFile.Lexer
+   Module      : Polar.ConfigFile.Lexer
    Copyright   : Copyright (C) 2004, 2008 John Goerzen, 2015 David Farrell
    License     : BSD3
 
@@ -12,13 +12,13 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
    Stability   : unstable
    Portability : portable
 
-Lexer support for "Data.ConfigFile".  This module is not intended to be
+Lexer support for "Polar.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
 Copyright (C) 2004, 2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
-module Data.ConfigFile.Lexer
+module Polar.ConfigFile.Lexer
 (
        -- -- * Temporary for testing
        --comment_chars, eol, optionsep, whitespace_chars, comment_line,

@@ -6,7 +6,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
 {-|
-   Module      : Data.ConfigFile.Parser
+   Module      : Polar.ConfigFile.Parser
    Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
    License     : BSD3
 
@@ -14,13 +14,13 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
    Stability   : unstable
    Portability : non-portable (GHC extensions)
 
-Parser support for "Data.ConfigFile".  This module is not intended to be
+Parser support for "Polar.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
 Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
-module Data.ConfigFile.Parser
+module Polar.ConfigFile.Parser
 (
  parseString, parseFile, parseHandle, interpMain, ParseOutput
        --satisfyG,
@@ -29,10 +29,10 @@ module Data.ConfigFile.Parser
 import Text.ParserCombinators.Parsec
 import Control.Monad.Error(throwError, MonadError)
 import Data.String.Utils
-import Data.ConfigFile.Lexer
+import Polar.ConfigFile.Lexer
 import System.IO(Handle, hGetContents)
 import Text.ParserCombinators.Parsec.Utils
-import Data.ConfigFile.Types
+import Polar.ConfigFile.Types
 
 ----------------------------------------------------------------------
 -- Exported funcs

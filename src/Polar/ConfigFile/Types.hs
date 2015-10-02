@@ -7,7 +7,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 -}
 
 {-|
-   Module      : Data.ConfigFile.Types
+   Module      : Polar.ConfigFile.Types
    Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
    License     : BSD3
 
@@ -15,13 +15,13 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
    Stability   : unstable
    Portability : non-portable (GHC extensions)
 
-Internal types for "Data.ConfigFile".  This module is not intended to be
+Internal types for "Polar.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
 Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
-module Data.ConfigFile.Types (
+module Polar.ConfigFile.Types (
                                     ConfigOptions, ConfigSections,
                                     ConfigErrorType(..), ConfigError, {-CPResult,-}
                                     ConfigParser(..),
@@ -47,10 +47,10 @@ type ConfigOptions = Map.Map OptionName String
 {- | The main data storage type (storage of sections).
 
 PLEASE NOTE: This type is exported only for use by other modules under
-Data.ConfigFile.  You should NEVER access the FiniteMap in a ConfigParser
+Polar.ConfigFile.  You should NEVER access the FiniteMap in a ConfigParser
 directly.  This type may change in future releases of MissingH, which could
 break your programs.  Please retrict yourself to the interface in
-'Data.ConfigFile'.
+'Polar.ConfigFile'.
  -}
 type ConfigSections = Map.Map SectionName ConfigOptions
 
@@ -60,7 +60,7 @@ data ConfigErrorType = ParseError String        -- ^ Parse error
                      | NoSection SectionName    -- ^ The section does not exist
                      | NoOption OptionName      -- ^ The option does not exist
                      | OtherProblem String      -- ^ Miscellaneous error
-                     | InterpolationError String -- ^ Raised by 'Data.ConfigFile.interpolatingAccess' if a request was made for a non-existant option
+                     | InterpolationError String -- ^ Raised by 'Polar.ConfigFile.interpolatingAccess' if a request was made for a non-existant option
                        deriving (Eq, Ord, Show)
 
 {- | Indicates an error occurred.  The String is an explanation of the location
@@ -78,7 +78,7 @@ an error, while a Right value indicates success.
 type CPResult a = MonadError ConfigError m => m a
 -}
 
-{- | This is the main record that is used by 'Data.ConfigFile'.
+{- | This is the main record that is used by 'Polar.ConfigFile'.
 -}
 data ConfigParser = ConfigParser
     { -- | The data itself
