@@ -1,5 +1,5 @@
 name:                polar-configfile
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Fork of ConfigFile for Polar Game Engine
 description:         A fork of ConfigFile updated and reworked to export a more consistent API for the Polar Game Engine.
 license:             BSD3
