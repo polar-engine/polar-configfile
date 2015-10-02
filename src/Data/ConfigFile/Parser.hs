@@ -38,19 +38,19 @@ import Data.ConfigFile.Types
 -- Exported funcs
 ----------------------------------------------------------------------
 
-parseString :: MonadError CPError m =>
+parseString :: MonadError ConfigError m =>
                 String -> m ParseOutput
 parseString s =
     detokenize "(string)" $ parse loken "(string)" s
 
 --parseFile :: FilePath -> IO (CPResult ParseOutput)
-parseFile :: MonadError CPError m => FilePath -> IO (m ParseOutput)
+parseFile :: MonadError ConfigError m => FilePath -> IO (m ParseOutput)
 parseFile f =
     do o <- parseFromFile loken f
        return $ detokenize f o
 
 --parseHandle :: Handle -> IO (CPResult ParseOutput)
-parseHandle :: MonadError CPError m => Handle -> IO (m ParseOutput)
+parseHandle :: MonadError ConfigError m => Handle -> IO (m ParseOutput)
 parseHandle h =
     do s <- hGetContents h
        let o = parse loken (show h) s
@@ -59,7 +59,7 @@ parseHandle h =
 ----------------------------------------------------------------------
 -- Private funcs
 ----------------------------------------------------------------------
-detokenize :: (Show t, MonadError (CPErrorData, [Char]) m) => SourceName
+detokenize :: (Show t, MonadError (ConfigErrorType, [Char]) m) => SourceName
            -> Either t [GeneralizedToken CPTok]
            -> m ParseOutput
 detokenize fp l =
@@ -141,7 +141,7 @@ interpother = do
               c <- noneOf "%"
               return [c]
 
-interptok :: (String -> Either CPError String) -> Parser String
+interptok :: (String -> Either ConfigError String) -> Parser String
 interptok lookupfunc = (try percentval)
                        <|> interpother
                        <|> do s <- interpval
@@ -151,7 +151,7 @@ interptok lookupfunc = (try percentval)
                                  Right x -> return x
 
 
-interpMain :: (String -> Either CPError String) -> Parser String
+interpMain :: (String -> Either ConfigError String) -> Parser String
 interpMain lookupfunc =
     do r <- manyTill (interptok lookupfunc) eof
        return $ concat r

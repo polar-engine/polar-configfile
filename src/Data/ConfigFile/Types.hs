@@ -22,11 +22,11 @@ Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farr
 -}
 
 module Data.ConfigFile.Types (
-                                    CPOptions, CPData,
-                                    CPErrorData(..), CPError, {-CPResult,-}
+                                    ConfigOptions, ConfigSections,
+                                    ConfigErrorType(..), ConfigError, {-CPResult,-}
                                     ConfigParser(..),
-                                    SectionSpec,
-                                    OptionSpec,
+                                    SectionName,
+                                    OptionName,
                                     ParseOutput
                                    ) where
 import qualified Data.Map as Map
@@ -36,13 +36,13 @@ import Control.Monad.Error
 type ParseOutput = [(String, [(String, String)])]
 
 {- | Names of sections -}
-type SectionSpec = String
+type SectionName = String
 
 {- | Names of options -}
-type OptionSpec = String
+type OptionName = String
 
 {- | Storage of options. -}
-type CPOptions = Map.Map OptionSpec String
+type ConfigOptions = Map.Map OptionName String
 
 {- | The main data storage type (storage of sections).
 
@@ -52,22 +52,22 @@ directly.  This type may change in future releases of MissingH, which could
 break your programs.  Please retrict yourself to the interface in
 'Data.ConfigFile'.
  -}
-type CPData = Map.Map SectionSpec CPOptions
+type ConfigSections = Map.Map SectionName ConfigOptions
 
 {- | Possible ConfigParser errors. -}
-data CPErrorData = ParseError String        -- ^ Parse error
-                 | SectionAlreadyExists SectionSpec -- ^ Attempt to create an already-existing ection
-                 | NoSection SectionSpec    -- ^ The section does not exist
-                 | NoOption OptionSpec      -- ^ The option does not exist
-                 | OtherProblem String      -- ^ Miscellaneous error
-                 | InterpolationError String -- ^ Raised by 'Data.ConfigFile.interpolatingAccess' if a request was made for a non-existant option
-                   deriving (Eq, Ord, Show)
+data ConfigErrorType = ParseError String        -- ^ Parse error
+                     | SectionAlreadyExists SectionName -- ^ Attempt to create an already-existing ection
+                     | NoSection SectionName    -- ^ The section does not exist
+                     | NoOption OptionName      -- ^ The option does not exist
+                     | OtherProblem String      -- ^ Miscellaneous error
+                     | InterpolationError String -- ^ Raised by 'Data.ConfigFile.interpolatingAccess' if a request was made for a non-existant option
+                       deriving (Eq, Ord, Show)
 
 {- | Indicates an error occurred.  The String is an explanation of the location
 of the error. -}
-type CPError = (CPErrorData, String)
+type ConfigError = (ConfigErrorType, String)
 
-instance Error CPError where
+instance Error ConfigError where
     noMsg = (OtherProblem "", "")
     strMsg x = (OtherProblem x, "")
 
@@ -75,26 +75,26 @@ instance Error CPError where
 
 | Basic ConfigParser error handling.  The Left value indicates
 an error, while a Right value indicates success.
-type CPResult a = MonadError CPError m => m a
+type CPResult a = MonadError ConfigError m => m a
 -}
 
 {- | This is the main record that is used by 'Data.ConfigFile'.
 -}
 data ConfigParser = ConfigParser
     { -- | The data itself
-      content :: CPData,
+      content :: ConfigSections,
       -- | How to transform an option into a standard representation
-      optionxform :: (OptionSpec -> OptionSpec),
+      optionNameTransform :: (OptionName -> OptionName),
       -- | Function to look up an option, considering a default value
-      -- if 'usedefault' is True; or ignoring a default value otherwise.
+      -- if 'useDefault' is True; or ignoring a default value otherwise.
       -- The option specification is assumed to be already transformed.
-      defaulthandler :: ConfigParser -> SectionSpec -> OptionSpec -> Either CPError String,
+      defaultHandler :: ConfigParser -> SectionName -> OptionName -> Either ConfigError String,
       -- | Whether or not to seek out a default action when no match
       -- is found.
-      usedefault :: Bool,
+      useDefault :: Bool,
       -- | Function that is used to perform lookups, do optional
-      -- interpolation, etc.  It is assumed that accessfunc
-      -- will internally call defaulthandler to do the underlying lookup.
+      -- interpolation, etc.  It is assumed that accessFunction
+      -- will internally call defaultHandler to do the underlying lookup.
       -- The option value is not assumed to be transformed.
-      accessfunc :: (ConfigParser -> SectionSpec -> OptionSpec -> Either CPError String)
+      accessFunction :: (ConfigParser -> SectionName -> OptionName -> Either ConfigError String)
     }
