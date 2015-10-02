@@ -18,8 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 module Main where 
 
+import System.Exit
 import Test.HUnit
 import Tests
 
-main = runTestTT tests
-
+main = do
+    Counts cases tried errors failures <- runTestTT tests
+    exitWith $ if errors == 0 || failures == 0 then ExitSuccess else ExitFailure 1

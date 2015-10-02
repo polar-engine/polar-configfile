@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 {- arch-tag: ConfigParser parser tests main file
 Copyright (C) 2004 John Goerzen <jgoerzen@complete.org>
 
@@ -24,7 +26,7 @@ import Test.HUnit.Tools
 import Control.Exception
 
 test_basic =
-    let f msg inp exp = TestLabel msg $ TestCase $ assertEqual "" (Right exp) (parse_string inp) in
+    let f msg inp exp = TestLabel msg $ TestCase $ assertEqual "" (Right exp) (parseString inp) in
         [
         f "empty string" "" []
 
@@ -57,7 +59,7 @@ test_basic =
                ]
 
 test_asserts =
-    let f msg inp exp = TestLabel msg $ TestCase $ exp @=? parse_string inp in
+    let f msg inp exp = TestLabel msg $ TestCase $ exp @=? parseString inp in
         [
          f "e test1" "#foo\nthis is bad data"
                      (Left (ParseError "\"(string)\" (line 2, column 1):\nunexpected \"t\"\nexpecting end of input, whitespace, start of comment, empty line, start of section or option separator", "lexer"))
@@ -69,14 +71,14 @@ test_asserts =
         
 
         assertRaises "e test1" (ErrorCall "Lexer: \"(string)\" (line 1, column 5):\nunexpected \"\\n\"\nexpecting Option separator")
-                      ([] @=? parse_string "#foo\nthis is bad data")
+                      ([] @=? parseString "#foo\nthis is bad data")
 
         assertRaises "e test2" (ErrorCall "Lexer: \"(string)\" (line 2, column 9):\nunexpected \"\\n\"\nexpecting Option separator")
-                     ([] @=? parse_string "[sect1]\n#iiiiii \n  extensionline\n#foo")
+                     ([] @=? parseString "[sect1]\n#iiiiii \n  extensionline\n#foo")
 -}
 
 test_extensionlines =
-    let f inp exp = (Right exp) @=? parse_string inp in
+    let f inp exp = (Right exp) @=? parseString inp in
         do
         f "[sect1]\nfoo: bar\nbaz: l1\n l2\n   l3\n# c\nquux: asdf"
           [("sect1", [("foo", "bar"),

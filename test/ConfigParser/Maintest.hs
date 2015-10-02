@@ -26,14 +26,14 @@ import Control.Exception
 import System.IO
 
 nullfile = openFile nullFileName ReadWriteMode
-testfile = "testsrc/ConfigParser/test.cfg"
-p inp = forceEither $ readstring emptyCP inp
+testfile = "test/ConfigParser/test.cfg"
+p inp = forceEither $ readFromString emptyCP inp
 f msg inp exp conv = TestLabel msg $ TestCase $ assertEqual "" (Right exp) (conv (p inp))
 
 -- f2s, f2b are useful for matching Left return values
-f2s :: String -> Either CPError String -> Either CPError String -> Test
+f2s :: String -> Either ConfigError String -> Either ConfigError String -> Test
 f2s = f2
-f2b :: String -> Either CPError Bool -> Either CPError Bool -> Test
+f2b :: String -> Either ConfigError Bool -> Either ConfigError Bool -> Test
 f2b = f2
 
 f2 msg exp res = TestLabel msg $ TestCase $ assertEqual "" exp res
@@ -81,7 +81,7 @@ test_basic =
         , f3 "extensions to string" 
              "[sect1]\nfoo: bar\nbaz: l1\n l2\n   l3\n# c\nquux: asdf"
              "[sect1]\nbaz: l1\n    l2\n    l3\nfoo: bar\nquux: asdf\n\n"
-             to_string
+             toString
         ]
 
 test_defaults = 
@@ -102,7 +102,7 @@ test_defaults =
       ]
 
 test_nodefault =
-    let cp = (p "def: ault\n[sect1]\nfoo: bar\nbaz: quuz\nint: 2\nfloat: 3\nbool: yes\n[sect4]\ndef: different"){usedefault = False} in
+    let cp = (p "def: ault\n[sect1]\nfoo: bar\nbaz: quuz\nint: 2\nfloat: 3\nbool: yes\n[sect4]\ndef: different"){useDefault = False} in
       [
        f2s "default item" (Left (NoOption "def", "get (sect1/def)")) 
                (get cp "sect1" "def")
@@ -137,34 +137,34 @@ test_merge =
            ,f2 "merge4" (cp) (merge cp2 cp)]
 
 test_remove = 
-    let cp = forceEither $ readstring emptyCP "def:ault\n[sect1]\ns1o1: v1\ns1o2:v2\n[sect2]\ns2o1: v1\ns2o2: v2\n[sect3]"
+    let cp = forceEither $ readFromString emptyCP "def:ault\n[sect1]\ns1o1: v1\ns1o2:v2\n[sect2]\ns2o1: v1\ns2o2: v2\n[sect3]"
         in [
             f2 "setup" ["sect1", "sect2", "sect3"] (sections cp)
            ,f2 "remove 1st s" (Right ["sect2", "sect3"])
-               (do x <- remove_section cp "sect1"
+               (do x <- removeSection cp "sect1"
                    return $ sections x
                 )
            ,f2 "remove 2nd s" (Right ["sect1", "sect3"])
-               (do x <- remove_section cp "sect2"
+               (do x <- removeSection cp "sect2"
                    return $ sections x
                 )
            ,f2 "remove 3rd s" (Right ["sect1", "sect2"])
-               (do x <- remove_section cp "sect3"
+               (do x <- removeSection cp "sect3"
                    return $ sections x
                 )
-           ,f2 "error handling s" (Left (NoSection "sect4", "remove_section"))
-                  (remove_section cp "sect4")
+           ,f2 "error handling s" (Left (NoSection "sect4", "removeSection"))
+                  (removeSection cp "sect4")
            ,f2 "remove an option" (Right (["sect1", "sect2", "sect3"], ["s1o2"]))
-               (do x <- remove_option cp "sect1" "s1o1"
+               (do x <- removeOption cp "sect1" "s1o1"
                    y <- options x "sect1"
                    return (sections x, y)
                 )
            ,f2 "option err 1" (Left (NoSection "sect4", 
-                                     "remove_option (sect4/s4o1)"))
-               (remove_option cp "sect4" "s4o1")
+                                     "removeOption (sect4/s4o1)"))
+               (removeOption cp "sect4" "s4o1")
            ,f2 "option err 2" (Left (NoOption "s1o3",
-                                     "remove_option (sect1/s1o3)"))
-               (remove_option cp "sect1" "s1o3")
+                                     "removeOption (sect1/s1o3)"))
+               (removeOption cp "sect1" "s1o3")
            ]
                   
         
@@ -174,7 +174,7 @@ test_remove =
 test_ex_nomonad = 
     do 
        fh <- nullfile
-       val <- readfile emptyCP testfile
+       val <- readFromFile emptyCP testfile
        let cp = forceEither val
        hPutStr fh "Your setting is:"
        hPutStr fh $ forceEither $ get cp "file1" "location"
@@ -184,21 +184,21 @@ test_ex_errormonad =
       TestLabel "chaining1" $ TestCase $ 
       (Right ["opt1", "opt2"]) @=? 
        do let cp = emptyCP
-          cp <- add_section cp "sect1"
+          cp <- addSection cp "sect1"
           cp <- set cp "sect1" "opt1" "foo"
           cp <- set cp "sect1" "opt2" "bar"
           options cp "sect1"
      ,TestLabel "chaining2" $ TestCase $ 
       (Left (NoSection "sect2", "set (sect2/opt2)")) @=? 
        do let cp = emptyCP
-          cp <- add_section cp "sect1"
+          cp <- addSection cp "sect1"
           cp <- set cp "sect1" "opt1" "foo"
           cp <- set cp "sect2" "opt2" "bar"
           options cp "sect1"
      ,TestLabel "chaining3" $ TestCase $ 
       ["opt1", "opt2"] @=? (
        forceEither $ do let cp = emptyCP
-                        cp <- add_section cp "sect1"
+                        cp <- addSection cp "sect1"
                         cp <- set cp "sect1" "opt1" "foo"
                         cp <- set cp "sect1" "opt2" "bar"
                         options cp "sect1"
@@ -216,7 +216,7 @@ test_interp =
                     "syn2 = foo%(asdf)\n" ++
                     "syn3 = foo%s\n" ++
                     "syn4 = %\n"
-        cp = (forceEither $ (readstring emptyCP interpdoc)){ accessfunc = interpolatingAccess 5}
+        cp = (forceEither $ (readFromString emptyCP interpdoc)){ accessFunction = interpolatingAccess 5}
         in
         [
          f2 "basic" (Right "i386") (get cp "DEFAULT" "arch")
