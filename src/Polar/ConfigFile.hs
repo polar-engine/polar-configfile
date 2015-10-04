@@ -130,12 +130,12 @@ emptyCP = ConfigParser { content = fromAL [("DEFAULT", [])],
                        useDefault = True,
                        accessFunction = simpleAccess}
 
-{- | Low-level tool to convert a parsed object into a 'ConfigSections'
+{- | Low-level tool to convert a parsed object into a 'Sections'
 representation.  Performs no option conversions or special handling
 of @DEFAULT@. -}
-fromAL :: ParseOutput -> ConfigSections
+fromAL :: ParseOutput -> Sections
 fromAL origal =
-    let conv :: ConfigSections -> (String, [(String, String)]) -> ConfigSections
+    let conv :: Sections -> (String, [(String, String)]) -> Sections
         conv fm sect = Map.insert (fst sect) (Map.fromList $ snd sect) fm
         in
         foldl conv Map.empty origal
@@ -237,7 +237,7 @@ merge :: ConfigParser -> ConfigParser -> ConfigParser
 merge src dest =
     let conv :: String -> String
         conv = optionNameTransform dest
-        convFM :: ConfigOptions -> ConfigOptions
+        convFM :: Options -> Options
         convFM = Map.fromList . map (\x -> (conv (fst x), snd x)) . Map.toList
         mergesects a b = Map.union a b
         in

@@ -23,7 +23,7 @@ Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farr
 -}
 
 module Polar.ConfigFile.Types (
-                                    ConfigOptions, ConfigSections,
+                                    Options, Sections,
                                     ConfigErrorType(..), ConfigError, {-CPResult,-}
                                     ConfigParser(..),
                                     SectionName,
@@ -43,17 +43,10 @@ type SectionName = String
 type OptionName = String
 
 {- | Storage of options. -}
-type ConfigOptions = Map.Map OptionName String
+type Options = Map.Map OptionName String
 
-{- | The main data storage type (storage of sections).
-
-PLEASE NOTE: This type is exported only for use by other modules under
-Polar.ConfigFile.  You should NEVER access the FiniteMap in a ConfigParser
-directly.  This type may change in future releases of MissingH, which could
-break your programs.  Please retrict yourself to the interface in
-'Polar.ConfigFile'.
- -}
-type ConfigSections = Map.Map SectionName ConfigOptions
+{- | The main data storage type (storage of sections). -}
+type Sections = Map.Map SectionName Options
 
 {- | Possible ConfigParser errors. -}
 data ConfigErrorType = ParseError String        -- ^ Parse error
@@ -83,7 +76,7 @@ type CPResult a = MonadError ConfigError m => m a
 -}
 data ConfigParser = ConfigParser
     { -- | The data itself
-      content :: ConfigSections,
+      content :: Sections,
       -- | How to transform an option into a standard representation
       optionNameTransform :: (OptionName -> OptionName),
       -- | Function to look up an option, considering a default value
