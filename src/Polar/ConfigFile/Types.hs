@@ -23,11 +23,12 @@ Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farr
 -}
 
 module Polar.ConfigFile.Types (
-                                    Options, Sections,
+                                    Sections, Options,
                                     ConfigErrorType(..), ConfigError, {-CPResult,-}
                                     ConfigParser(..),
                                     SectionName,
                                     OptionName,
+                                    Option, Section,
                                     ParseOutput
                                    ) where
 import qualified Data.Map as Map
@@ -41,6 +42,12 @@ type SectionName = String
 
 {- | Names of options -}
 type OptionName = String
+
+{- | Representation of sections -}
+type Section = (SectionName, Options)
+
+{- | Representation of options -}
+type Option = (OptionName, String)
 
 {- | Storage of options. -}
 type Options = Map.Map OptionName String

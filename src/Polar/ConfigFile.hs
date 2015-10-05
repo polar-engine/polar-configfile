@@ -70,6 +70,10 @@ module Polar.ConfigFile
      -- $initialization
      emptyCP,
 
+     -- * Building
+     -- $building
+     (|%|), (|$|), (|=|),
+
      -- * Configuring the ConfigParser
      -- $configuringcp
 
@@ -129,6 +133,22 @@ emptyCP = ConfigParser { content = fromAL [("DEFAULT", [])],
                        optionNameTransform = map toLower,
                        useDefault = True,
                        accessFunction = simpleAccess}
+
+(|%|) :: ConfigParser -> Section -> ConfigParser
+cp |%| (sect, opts) = cp { content = Map.insert sect opts (content cp) }
+
+class BuildSection a where (|$|) :: a -> Option -> Section
+instance BuildSection Section where (sect, sMap) |$| (oName, oValue) = (sect, Map.insert oName oValue sMap)
+instance BuildSection SectionName where     sect |$| (oName, oValue) = (sect, Map.singleton oName oValue)
+
+(|=|) :: OptionName -> String -> Option
+opt |=| val = (opt, val)
+
+-- the list append function (++) has a precendence of 5
+-- and should bind more tightly than these operators
+infixl 2 |%|
+infixl 3 |$|
+infix  4 |=|
 
 {- | Low-level tool to convert a parsed object into a 'Sections'
 representation.  Performs no option conversions or special handling
