@@ -134,11 +134,12 @@ emptyCP = ConfigParser { content = fromAL [("DEFAULT", [])],
                        useDefault = True,
                        accessFunction = simpleAccess}
 
-(|%|) :: ConfigParser -> Section -> ConfigParser
-cp |%| (sect, opts) = cp { content = Map.insert sect opts (content cp) }
+class BuildConfig a where (|%|) :: a -> Section -> ConfigParser
+instance BuildConfig ConfigParser where cp |%| (sect, opts) = cp { content = Map.insert sect opts (content cp) }
+instance BuildConfig Section where sect1 |%| sect2 = emptyCP |%| sect1 |%| sect2
 
 class BuildSection a where (|$|) :: a -> Option -> Section
-instance BuildSection Section where (sect, sMap) |$| (oName, oValue) = (sect, Map.insert oName oValue sMap)
+instance BuildSection Section where (sect, opts) |$| (oName, oValue) = (sect, Map.insert oName oValue opts)
 instance BuildSection SectionName where     sect |$| (oName, oValue) = (sect, Map.singleton oName oValue)
 
 (|=|) :: OptionName -> String -> Option
