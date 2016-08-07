@@ -1,14 +1,14 @@
-{-# LANGUAGE Trustworthy #-}
+{-# LANGUAGE Safe #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 {-
 Copyright (C) 2004-2008 John Goerzen <jgoerzen@complete.org>
-Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
+Copyright (C) 2015-2016 David Farrell <shokku.ra@gmail.com>
 -}
 
 {-|
    Module      : Polar.ConfigFile.Parser
-   Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015 David Farrell
+   Copyright   : Copyright (C) 2004-2008 John Goerzen, 2015-2016 David Farrell
    License     : BSD3
 
    Maintainer  : David Farrell <shokku.ra@gmail.com>
@@ -18,7 +18,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 Parser support for "Polar.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
-Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
+Copyright (C) 2004-2008 John Goerzen \<jgoerzen\@complete.org\>, 2015-2016 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
 module Polar.ConfigFile.Parser
@@ -29,10 +29,9 @@ module Polar.ConfigFile.Parser
 ) where
 import Text.ParserCombinators.Parsec
 import Control.Monad.Error(throwError, MonadError)
-import Data.String.Utils
 import Polar.ConfigFile.Lexer
 import System.IO(Handle, hGetContents)
-import Text.ParserCombinators.Parsec.Utils
+import Polar.ConfigFile.Utils
 import Polar.ConfigFile.Types
 
 ----------------------------------------------------------------------
@@ -119,7 +118,7 @@ coption =
 valmerge :: [String] -> String
 valmerge vallist =
     let vl2 = map strip vallist
-        in join "\n" vl2
+        in joinXs "\n" vl2
 
 ----------------------------------------------------------------------
 -- Interpolation

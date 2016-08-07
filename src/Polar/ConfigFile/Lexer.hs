@@ -1,13 +1,13 @@
-{-# LANGUAGE Trustworthy #-}
+{-# LANGUAGE Safe #-}
 
 {- arch-tag: ConfigParser lexer support
 Copyright (C) 2004, 2008 John Goerzen <jgoerzen@complete.org>
-Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
+Copyright (C) 2015-2016 David Farrell <shokku.ra@gmail.com>
 -}
 
 {- |
    Module      : Polar.ConfigFile.Lexer
-   Copyright   : Copyright (C) 2004, 2008 John Goerzen, 2015 David Farrell
+   Copyright   : Copyright (C) 2004, 2008 John Goerzen, 2015-2016 David Farrell
    License     : BSD3
 
    Maintainer  : David Farrell <shokku.ra@gmail.com>
@@ -17,7 +17,7 @@ Copyright (C) 2015 David Farrell <shokku.ra@gmail.com>
 Lexer support for "Polar.ConfigFile".  This module is not intended to be
 used directly by your programs.
 
-Copyright (C) 2004, 2008 John Goerzen \<jgoerzen\@complete.org\>, 2015 David Farrell \<shokku.ra\@gmail.com\>.
+Copyright (C) 2004, 2008 John Goerzen \<jgoerzen\@complete.org\>, 2015-2016 David Farrell \<shokku.ra\@gmail.com\>.
 -}
 
 module Polar.ConfigFile.Lexer
@@ -27,11 +27,14 @@ module Polar.ConfigFile.Lexer
        --empty_line, sectheader_chars, sectheader, oname_chars, value_chars,
        --extension_line, optionkey, optionvalue, optionpair
        loken,
-       CPTok(..)
+       CPTok(..),
+       GeneralizedToken,
+       GeneralizedTokenParser,
+       togtok
 ) where
 
 import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Utils
+import Polar.ConfigFile.Utils
 
 data CPTok = IGNOREDATA
            | NEWSECTION String

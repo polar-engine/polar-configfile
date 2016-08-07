@@ -102,8 +102,7 @@ module Polar.ConfigFile
 
 import Polar.ConfigFile.Types
 import Polar.ConfigFile.Parser
-import Data.Either.Utils
-import Data.String.Utils
+import Polar.ConfigFile.Utils
 import qualified Data.Map as Map
 import System.IO (Handle)
 import Data.Char
